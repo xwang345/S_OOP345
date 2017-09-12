@@ -1,0 +1,301 @@
+Script started on Wed 12 Apr 2017 11:55:41 AM EDT
+
+szhang146@matrix:~/Semester3/oop345/milestone3> cat item.cpp util.cpp util.h
+#include <iostream>
+#include <fstream>
+#include <vector> 
+#include <string>
+#include "util.h"
+
+using namespace std;
+
+
+class Item {
+  string itemName, itemInstaller, itemRemover, itemSequence, itemDescription;
+public:
+  Item( vector<string> row)
+  {
+     switch (row.size()) {
+     case 5:
+        itemDescription = row[4];
+     case 4:
+        if (validItemName(row[0]))
+           itemName = row[0];
+        else
+           throw std::string("Expected a item name --- found '") + row[0] + "'";
+
+        if (validTaskName(row[1]))
+           itemInstaller = row[1];
+        else
+           throw std::string("Expected a installer task --- found '") + row[1] + "'";
+
+        if (validTaskName(row[2]))
+           itemRemover = row[2];
+        else
+           throw std::string("Expected a remover task --- found '") + row[2] + "'";
+
+        if (validItemSequence(row[3]))
+           itemSequence = row[3];
+        else
+           throw std::string("Expected a sequence number --- found '") + row[3] + "'";
+        break;
+     default:
+        throw std::string("Expected 4 or 5 feilds, found '") + std::to_string(row.size());
+     }
+  }
+  void print()
+  {
+     std::cout << "/Name/Installer/Remover/Sequence/Description/ = "
+        << "/" << itemName
+        << "/" << itemInstaller
+        << "/" << itemRemover
+        << "/" << itemSequence
+        << "/" << itemDescription
+        << "\n";
+  }
+  void graph( fstream& os )
+  {
+     std::string q = "\"";
+     os << q << "Item: " + itemName << q << " -> " << q << "Installer: " << itemInstaller << q << " [color=green];\n";
+     os << q << "Item: " + itemName << q << " -> " << q << "Remover: " << itemInstaller << q << " [color=red];\n";
+  }
+};
+
+class ItemManager {
+  vector< Item > itemList;
+public:
+  ItemManager( vector < vector< string > > & csvData)
+  {
+     for (auto& row : csvData) {
+        try {
+           itemList.push_back(std::move(Item(row)));
+        }
+        catch (const std::string& e) {
+           std::cerr << e << "\n";
+        }
+     }
+  }
+  void print()
+  {
+     for (auto e : itemList)
+        e.print();
+  }
+  void graph(string& filename)
+  {
+     std::string f = filename + ".gv";
+     std::fstream os(f, std::ios::out | std::ios::trunc);
+     os << "digraph itemGraph {\n";
+
+     for (auto t : itemList) {
+        t.graph(os);
+     }
+
+     os << "}\n";
+
+     os.close();
+
+     std::string cmd = std::string("dot -Tpng ") + filename + ".gv > " + filename + ".gv.png";
+
+     std::cout << cmd << " returned " << system(cmd.c_str()) << "\n";
+  }
+
+};
+
+int main(int argc, char*argv[])
+{
+  try {
+    if(argc != 3) {
+      throw string("Usage ") + argv[0] + string(": filename delimiter-char");
+    }
+
+    string filename  = string(argv[1]);     // 1st arg is filename
+    char   delimiter = argv[2][0];          // 2nd arg, 1st char is delimiter
+
+    vector < vector< string > > csvItemData;
+    csvReader(filename, delimiter, csvItemData);
+
+    // csvPrint(csvItemData);
+
+    ItemManager im(csvItemData);
+    im.print();
+    im.graph(filename);
+
+  } catch (const string& e) {
+    cerr << e << "\n";
+  }
+}
+#include <vector>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include "util.h"
+std::string& trim(std::string& s, char trimChar)
+{
+   while (!s.empty() && s[0] == trimChar)
+      s.erase(0, 1);
+
+   while (!s.empty() && s[s.size() - 1] == trimChar)
+      s.erase(s.size() - 1, 1);
+
+   return s;
+}
+
+#define PROCESS_DOUBLE_QUOTES
+void csvReader(std::string& filename, char delim, std::vector< std::vector<std::string> > &csv)
+{
+   std::ifstream is(filename);
+   if (is) {
+      std::string line;
+      std::vector<std::string> fields;
+
+      while (getline(is, line)) {
+         auto cr = line.find('\r');
+         if (cr != std::string::npos)
+            line.erase(cr, 1);
+
+         std::string field;
+         for (size_t i = 0; i < line.size(); i++) {
+#ifdef PROCESS_DOUBLE_QUOTES
+            if (line[i] == '"') {
+               field += line[i];        // copy 1st "
+               for (i++; i < line.size(); i++) {
+                  field += line[i];
+                  if (line[i] == '"')     // found 2nd "
+                     break;
+               }
+            }
+            else
+#endif
+               if (line[i] != delim) {
+                  field += line[i];
+               }
+               else {
+                  trim(field);
+                  if (!field.empty())
+                     fields.push_back(move(field));
+                  // field.clear(); // not needed if we do a move
+               }
+         }
+         trim(field);
+         if (!field.empty())
+            fields.push_back(field);
+         if (!fields.empty())
+            csv.push_back(move(fields));
+         // field.clear(); // not needed if we do a move
+      }
+      is.close();
+   }
+   else {
+      std::cerr << "cannot open file " << filename << "\n";
+   }
+}
+
+void csvPrint(std::vector< std::vector<std::string> > &csv)
+{
+
+
+   // Method 1 - range-based for loop: 
+   for (auto row : csv) {
+      for (auto column : row) {
+         std::cout << column << " ";
+      }
+      std::cout << "\n";
+   }
+   std::cout << "\n";
+
+   // Method 2 - conventional for loop
+   for (size_t row = 0; row < csv.size(); row++) {
+      for (size_t column = 0; column < csv[row].size(); column++) {
+         std::cout << csv[row][column] << " ";
+      }
+      std::cout << "\n";
+   }
+   std::cout << "\n";
+
+   // Method 3 - iterator for loop
+   for (auto row = csv.begin(); row < csv.end(); row++) {
+      for (auto column = row->begin(); column < row->end(); column++) {
+         std::cout << *column << " ";
+      }
+      std::cout << "\n";
+   }
+   std::cout << "\n";
+}
+bool validTaskName(std::string &s) {
+   for (auto c : s)
+      if (!(isalnum(c) || c == ' '))
+         return false;
+   return true;
+}
+
+bool validSlots(std::string &s) {
+   for (auto c : s)
+      if (!(isdigit(c)))
+         return false;
+   return true;
+}
+bool validCustomerName(std::string &s) {
+   for (auto c : s)
+      if (!(isalnum(c) || c == ' '))
+         return false;
+   return true;
+}
+bool validProductName(std::string &s) {
+   for (auto c : s)
+      if (!(isalnum(c) || c == ' '))
+         return false;
+   return true;
+}
+bool validItemName(std::string &s) {
+   for (auto c : s)
+      if (!(isalnum(c) || c == ' '))
+         return false;
+   return true;
+}
+bool validItemSequence(std::string &s) {
+   for (auto c : s)
+      if (!(isalnum(c) || c == ' '))
+         return false;
+   return true;
+}#pragma once
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+std::string& trim(std::string& s, char trimChar = ' ');
+
+void csvReader(std::string& filename, char delim, std::vector< std::vector<std::string> > &csv);
+
+void csvPrint(std::vector< std::vector< std::string >> &csvData);
+
+bool validTaskName(std::string &s);
+bool validSlots(std::string &s);
+bool validItemSequence(std::string& s);
+bool validCustomerName(std::string& s);
+bool validProductName(std::string& s);
+bool validItemName(std::string& s);szhang146@matrix:~/Semester3/oop345/milestone3> 
+szhang146@matrix:~/Semester3/oop345/milestone3> 
+szhang146@matrix:~/Semester3/oop345/milestone3> g++ -std=c++0x util.cpp item.cpp -o m3item
+szhang146@matrix:~/Semester3/oop345/milestone3> ./m3item dat/ItemList_Clean.dat      '|'
+/Name/Installer/Remover/Sequence/Description/ = /CPU/CPU/Remove CPU/300/Central Processing Unit
+/Name/Installer/Remover/Sequence/Description/ = /Memory/Memory/Remove Memory/400/Samsung Memory Stick
+/Name/Installer/Remover/Sequence/Description/ = /GPU/GPU/Remove GPU/500/Nvidia Geforce 750M
+/Name/Installer/Remover/Sequence/Description/ = /Power Supply/Power Supply/Remove Power Supply/100/
+dot -Tpng dat/ItemList_Clean.dat.gv > dat/ItemList_Clean.dat.gv.png returned 0
+szhang146@matrix:~/Semester3/oop345/milestone3> ./m3item dat/ItemList_Whitespace.dat '|'
+/Name/Installer/Remover/Sequence/Description/ = /CPU/CPU/Remove CPU/300/Central Processing Unit
+/Name/Installer/Remover/Sequence/Description/ = /Memory/Memory/Remove Memory/400/Samsung Memory Stick
+/Name/Installer/Remover/Sequence/Description/ = /GPU/GPU/Remove GPU/500/Nvidia Geforce 750M
+/Name/Installer/Remover/Sequence/Description/ = /Power Supply/Power Supply/Remove Power Supply/100/
+dot -Tpng dat/ItemList_Whitespace.dat.gv > dat/ItemList_Whitespace.dat.gv.png returned 0
+szhang146@matrix:~/Semester3/oop345/milestone3> ./m3item dat/ItemList_Malformed.dat  '|'
+/Name/Installer/Remover/Sequence/Description/ = /CPU/CPU/Remove CPU/300/Central Processing Unit
+/Name/Installer/Remover/Sequence/Description/ = /Memory/Memory/Remove Memory/400/Samsung Memory Stick
+/Name/Installer/Remover/Sequence/Description/ = /GPU/GPU/Remove GPU/500/Nvidia Geforce 750M
+/Name/Installer/Remover/Sequence/Description/ = /Power Supply/Power Supply/Remove Power Supply/100/
+dot -Tpng dat/ItemList_Malformed.dat.gv > dat/ItemList_Malformed.dat.gv.png returned 0
+szhang146@matrix:~/Semester3/oop345/milestone3> exit
+exit
+
+Script done on Wed 12 Apr 2017 11:57:01 AM EDT

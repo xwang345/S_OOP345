@@ -1,0 +1,22 @@
+﻿  w8.cpp
+d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\lab8_未完\w8\datatable.h(56): warning C4244: 'initializing': conversion from 'unsigned int' to 'float', possible loss of data
+  d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\lab8_未完\w8\datatable.h(51): note: while compiling class template member function 'void w8::DataTable<float>::regression(T &,T &) const'
+          with
+          [
+              T=float
+          ]
+  d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\lab8_未完\w8\w8.cpp(37): note: see reference to function template instantiation 'void w8::DataTable<float>::regression(T &,T &) const' being compiled
+          with
+          [
+              T=float
+          ]
+  d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\lab8_未完\w8\w8.cpp(31): note: see reference to class template instantiation 'w8::DataTable<float>' being compiled
+d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\lab8_未完\w8\datatable.h(47): warning C4244: 'initializing': conversion from 'unsigned int' to 'float', possible loss of data
+  d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\lab8_未完\w8\datatable.h(44): note: while compiling class template member function 'float w8::DataTable<float>::median(void) const'
+  d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\lab8_未完\w8\w8.cpp(42): note: see reference to function template instantiation 'float w8::DataTable<float>::median(void) const' being compiled
+d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\lab8_未完\w8\datatable.h(48): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\lab8_未完\w8\datatable.h(64): warning C4018: '<': signed/unsigned mismatch
+  d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\lab8_未完\w8\datatable.h(61): note: while compiling class template member function 'void w8::DataTable<float>::display(std::ostream &) const'
+  d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\lab8_未完\w8\datatable.h(70): note: see reference to function template instantiation 'void w8::DataTable<float>::display(std::ostream &) const' being compiled
+  w8.vcxproj -> D:\Sync_forler\Dropbox\Dropbox\CPA\0_OOP345\Lab\lab8_未完\w8\Debug\w8.exe
+  w8.vcxproj -> D:\Sync_forler\Dropbox\Dropbox\CPA\0_OOP345\Lab\lab8_未完\w8\Debug\w8.pdb (Full PDB)

@@ -1,0 +1,48 @@
+review walkthrough:
+1,review simple structure:
+	1)lambda
+	2)derive
+	3)STL queue - walkthrough
+	
+2, short answer
+	1) last semester's Question + Answer on paper or record
+	2) fill blank (reference last semester's Question)
+3, code 
+	1) lab10 + reference last semester's Question(see //......)
+		read a file
+		(1) read
+		(2) write 
+	2) bitshift.cpp
+		bit rotation
+		e.g.
+		1,2,3,4,5,6,7,8
+
+		go left d << 1
+		2,3,4,5,6,7,8,1
+
+		go right d >> 1 
+		8,1,2,3,4,5,6,7
+
+
+		rol: (d >> 1) | (d << 7);
+		rol: (d << 1) | (d >> 7);  -->  (d << n) | ( d >> (8 - n) )
+
+		template T......
+		8*sizeof(T);
+	
+	
+		Read: bitshift.cpp   !!!
+		bit_rol()            !!!
+			https://github.com/CaptGreg/SenecaOOP345-attic/blob/master/bitshift.cpp
+			template <class T>
+			T bit_rol(T t, int bits = 1)  // rol = rotate left
+			{
+			  return (t << bits) | (t >> (8*sizeof(T) - bits));
+			}
+
+			template <class T>
+			T bit_ror(T t, int bits = 1)  // ror = rotate right
+			{
+			  return (t >> bits) | (t << (8*sizeof(T) - bits));
+			}
+4, walkthrough - last semester's Question

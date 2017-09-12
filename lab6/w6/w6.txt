@@ -1,0 +1,121 @@
+Script started on Thu 23 Feb 2017 10:25:59 PM EST
+szhang146@matrix:~/Semester3/oop345/lab6> whoami
+szhang146
+szhang146@matrix:~/Semester3/oop345/lab6> cat w6.cpp Grades.h
+// Workshop 6 - Lambda Expression
+// w6.cpp
+
+#include <iostream>
+#include "Grades.h"
+
+int main(int argc, char* argv[]) {
+	if (argc != 2) {
+		std::cerr << argv[0] <<
+			": incorrect number of arguments\n";
+		std::cerr << "Usage: " << argv[0] << " file_name\n";
+		return 1;
+	}
+
+	Grades grades(argv[1]);
+
+	// define the lambda expression for letter
+	auto letter = [](double mark)->std::string{
+		std::string letterGrade;
+		if (mark >= 90)
+			letterGrade = "A+";
+		else if (mark >= 80)
+			letterGrade = "A";
+		else if (mark >= 75)
+			letterGrade = "B+";
+		else if (mark >= 70)
+			letterGrade = "B";
+		else if (mark >= 65)
+			letterGrade = "C+";
+		else if (mark >= 60)
+			letterGrade = "C";
+		else if (mark >= 55)
+			letterGrade = "D+";
+		else if (mark >= 50)
+			letterGrade = "D";
+		else
+			letterGrade = "F";
+		return letterGrade;
+	};
+
+	grades.displayGrades(std::cout, letter);
+
+	std::cout << "Press any key to continue ... ";
+	std::cin.get();
+}
+
+// Grades.h
+#pragma once
+#include <iostream>
+#include <string>
+#include <fstream>
+using namespace std;
+
+class Grades
+{
+   string* students_;
+   double* grades_;
+   int count_;
+
+public:
+   Grades()
+      : students_(nullptr), grades_(nullptr), count_(0) {}
+
+   Grades(char* file) {
+      try {
+         ifstream fs(file);
+         if (fs.is_open()) {
+            int line = 0;
+            string s;
+            while (getline(fs, s))
+               line++;
+            fs.clear();
+            fs.seekg(0);
+            count_ = line;
+            students_ = new string[count_];
+            grades_ = new double[count_];
+            for (int i = 0; i < count_; i++) {
+               fs >> students_[i];
+               fs >> grades_[i];
+            }
+            fs.close();
+         }
+         else throw "Failed to open file.";
+      }
+      catch (const char* msg) {
+         cerr << msg << endl;
+         exit(0);
+      }
+   }
+
+   template<typename T>
+   void displayGrades(std::ostream& os, T t) const {
+      for (int i = 0; i < count_; i++)
+         os << students_[i] << " " << grades_[i] << " " << t(grades_[i]) << endl;
+   }
+
+   Grades(const Grades& g) = delete;
+   Grades(Grades&& g) = delete;
+   Grades& operator=(const Grades& g) = delete;
+   Grades&& operator=(Grades&& g) = delete;
+};
+szhang146@matrix:~/Semester3/oop345/lab6> g++ -std="c++0x" -o w6 w6.cpp
+szhang146@matrix:~/Semester3/oop345/lab6> w6 w6.dat
+1022342 67.4 C+
+1024567 73.5 B
+2031456 79.3 B+
+6032144 53.5 D
+1053250 92.1 A+
+3026721 86.5 A
+7420134 62.3 C
+9762314 58.7 D+
+6521045 34.6 F
+Press any key to continue ... 
+szhang146@matrix:~/Semester3/oop345/lab6> exit
+exit
+
+Script done on Thu 23 Feb 2017 10:26:26 PM EST

@@ -1,0 +1,10 @@
+﻿  factory.cpp
+d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\milestone5_test\milestone5\consoleapplication1\consoleapplication1\factory.cpp(22): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Generating Code...
+cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
+  Compiling...
+  i.cpp
+d:\sync_forler\dropbox\dropbox\cpa\0_oop345\lab\milestone5_test\milestone5\consoleapplication1\consoleapplication1\i.cpp : fatal error C1041: cannot open program database 'D:\Sync_forler\Dropbox\Dropbox\CPA\0_OOP345\Lab\milestone5_test\milestone5\consoleapplication1\consoleapplication1\Debug\vc140.idb'; if multiple CL.EXE write to the same .PDB file, please use /FS
+  o.cpp
+  t.cpp
+  Generating Code...

@@ -1,0 +1,3 @@
+﻿  w9.cpp
+MSVCRTD.lib(exe_main.obj) : error LNK2019: unresolved external symbol main referenced in function "int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ)
+D:\Sync_forler\Dropbox\Dropbox\CPA\0_OOP345\Lab\ab9\workshop9\x64\Debug\workshop9.exe : fatal error LNK1120: 1 unresolved externals

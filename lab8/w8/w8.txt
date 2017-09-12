@@ -1,0 +1,140 @@
+Script started on Sun 12 Mar 2017 05:32:52 PM EDT
+szhang146@matrix:~/Semester3/oop345/lab8> whoami
+szhang146
+szhang146@matrix:~/Semester3/oop345/lab8> cat DataTable.h
+//DataTable.h
+#pragma once
+#include <numeric>   
+#include <algorithm> 
+#include <vector>    
+#include <cmath>   
+using namespace std;
+
+namespace w8 { 
+   template<typename T>
+   class DataTable {
+      int FW;
+      int ND;
+      vector<T> x_;
+      vector<T> y_;
+   public:
+      DataTable(ifstream& is, int field_width, int number_of_decimals) {
+         FW = field_width;
+         ND = number_of_decimals;
+         T x, y;
+         if (is.is_open()) {
+            while (!is.eof()) {
+               is >> x;
+               x_.push_back(x);
+               is >> y;
+               y_.push_back(y);
+            }
+         }
+      }
+     
+      T mean() const {
+         T sum = accumulate(y_.begin(), y_.end(), (T)0);
+         return sum / y_.size();
+      }
+
+      T sigma() const {
+         T m = mean();
+         T sum = 0;
+         for (size_t i = 0; i < y_.size(); i++)
+            sum = sum + (y_.at(i) - m) * (y_.at(i) - m);
+         return sqrt(static_cast<double>(sum / (y_.size() - 1)));
+      }
+
+      T median() const {
+         vector<T> v = y_;                           
+         sort(v.begin(), v.end());
+         T t = y_.size();
+         return v[t / 2];
+      }
+
+      void regression(T& slope, T& y_intercept) const {
+         T tatal_xy     = inner_product(x_.begin(), x_.end(), y_.begin(), (T)0);
+         T tatal_x      = accumulate(x_.begin(), x_.end(), (T)0);
+         T tatal_y      = accumulate(y_.begin(), y_.end(), (T)0);
+         T tatal_xx   = inner_product(x_.begin(), x_.end(), x_.begin(), (T)0);
+         T num = y_.size();
+         slope = (num * tatal_xy - tatal_x * tatal_y) / (num * tatal_xx - tatal_x * tatal_x);
+         y_intercept = (tatal_y - slope * tatal_x) / num;
+      }
+
+      void display(ostream& os) const {
+         os << setw(FW) << setprecision(ND) << fixed<< 'X';
+         os << setw(FW) << 'Y' << endl;
+         for (int i = 0; i < x_.size(); i++) {
+            os << setw(FW) << x_[i] << setw(FW) << y_[i] << endl;
+         }
+      }
+
+      friend ostream& operator<<(ostream& os, const DataTable& datatable) {
+         datatable.display(os);
+         return os;
+      }
+   };
+}
+szhang146@matrix:~/Semester3/oop345/lab8> g++ -o w8 w8.cpp
+szhang146@matrix:~/Semester3/oop345/lab8> w8 Simple.dat p
+
+Command Line : w8 Simple.dat p 
+
+Data Values
+===========
+      X      Y
+   2.10   8.00
+   2.50  12.00
+   4.00  14.00
+   3.60  10.00
+
+
+Statistics
+==========
+y mean    =   11.00
+y sigma   =    2.58
+y median  =   12.00
+slope     =    1.91
+intercept =    5.18
+
+Press any key to continue ... 
+szhang146@matrix:~/Semester3/oop345/lab8> w8 Flat.dat p
+
+Command Line : w8 Flat.dat p 
+
+Data Values
+===========
+      X      Y
+   1.00   1.00
+   2.00   1.00
+   3.00   1.00
+   4.00   1.00
+
+
+Statistics
+==========
+y mean    =    1.00
+y sigma   =    0.00
+y median  =    1.00
+slope     =    0.00
+intercept =    1.00
+
+Press any key to continue ... 
+szhang146@matrix:~/Semester3/oop345/lab8> w8 HS_College_GPA.dat
+
+Command Line : w8 HS_College_GPA.dat 
+
+Statistics
+==========
+y mean    =    3.12
+y sigma   =    0.50
+y median  =    3.21
+slope     =    0.78
+intercept =    0.73
+
+Press any key to continue ... 
+szhang146@matrix:~/Semester3/oop345/lab8> exit
+exit
+
+Script done on Sun 12 Mar 2017 05:33:32 PM EDT
